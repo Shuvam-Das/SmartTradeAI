@@ -1,4 +1,5 @@
 
+
 import React from 'react';
 
 const InfoIcon: React.FC<{ className?: string }> = ({ className }) => (
@@ -7,7 +8,7 @@ const InfoIcon: React.FC<{ className?: string }> = ({ className }) => (
     className={className}
     width="24"
     height="24"
-    viewBox="0 0 24 24"
+    viewBox="0 0 24"
     fill="none"
     stroke="currentColor"
     strokeWidth="2"
