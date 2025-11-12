@@ -1,3 +1,4 @@
+
 // This is a MOCK service. In a real application, you would implement the actual Gemini API calls.
 // Note: The @google/genai package is not actually installed in this environment,
 // so this is for demonstration purposes.
@@ -26,7 +27,21 @@ class MockGoogleGenAI {
                 const prompt = params.contents.toLowerCase();
                 let responseText = "I am SmartTradeAI. How can I assist with your trading strategy today?";
 
-                if (prompt.includes("trading strategy") && prompt.includes("tata motors")) {
+                 if (prompt.includes("generate profit booking strategy")) {
+                    const symbolMatch = prompt.match(/for (\w+)/);
+                    const symbol = symbolMatch ? symbolMatch[1].toUpperCase() : 'the stock';
+                    responseText = `**AI-Generated Profit Booking Strategy for ${symbol}:**
+
+Based on recent volatility and short-term momentum indicators, a balanced risk-reward strategy is recommended.
+
+*   **Profit Target:** A **+10%** gain from the current price is an achievable target in the current market conditions.
+*   **Stop-Loss:** A **-5%** stop-loss from the current price will protect against significant downside risk.
+
+**Rationale:**
+*   This strategy aims for a 2:1 risk-reward ratio.
+*   The levels are set outside of typical daily price fluctuations to avoid premature exits.
+*   Activating this will allow the AI agent to monitor and execute the trade automatically.`;
+                } else if (prompt.includes("trading strategy") && prompt.includes("tata motors")) {
                      responseText = `**Simple Momentum Strategy for TATA MOTORS:**
 
 This strategy aims to capitalize on the stock's current upward trend.

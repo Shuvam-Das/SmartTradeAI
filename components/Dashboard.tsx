@@ -5,18 +5,24 @@ import Watchlist from './Watchlist';
 import PnLChart from './PnLChart';
 import Alerts from './Alerts';
 import AIAnalyst from './AIAnalyst';
+import { PortfolioSummaryData, Alert } from '../types';
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+    summaryData: PortfolioSummaryData;
+    alerts: Alert[];
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ summaryData, alerts }) => {
   return (
     <div>
       <h3 className="text-3xl font-medium text-white">Dashboard</h3>
-      <PortfolioSummary />
+      <PortfolioSummary summaryData={summaryData} />
       <div className="mt-8 grid grid-cols-1 lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2">
             <PnLChart />
         </div>
         <div>
-            <Alerts />
+            <Alerts alerts={alerts} />
         </div>
       </div>
       <div className="mt-8 grid grid-cols-1 xl:grid-cols-2 gap-8">

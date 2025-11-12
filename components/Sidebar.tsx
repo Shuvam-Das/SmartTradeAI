@@ -7,6 +7,7 @@ import ChartIcon from './icons/ChartIcon';
 import SettingsIcon from './icons/SettingsIcon';
 import LogoutIcon from './icons/LogoutIcon';
 import AIIcon from './icons/AIIcon';
+import RobotIcon from './icons/RobotIcon';
 
 interface NavLinkProps {
   icon: React.ReactNode;
@@ -60,6 +61,12 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, onLogout }) =
             active={activePage === 'Portfolio'}
             onClick={() => onNavigate('Portfolio')}
           />
+           <NavLink
+            icon={<RobotIcon className="w-5 h-5" />}
+            label="Automations"
+            active={activePage === 'Automations'}
+            onClick={() => onNavigate('Automations')}
+          />
           <NavLink
             icon={<ScreenerIcon className="w-5 h-5" />}
             label="Screener"
@@ -69,9 +76,8 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, onLogout }) =
           <NavLink
             icon={<AIIcon className="w-5 h-5" />}
             label="AI Analyst"
-            active={activePage === 'AI Analyst'}
             onClick={() => onNavigate('Dashboard')} // AI Analyst is on the dashboard
-            disabled={activePage !== 'Dashboard'}
+            disabled
           />
           <NavLink
             icon={<SettingsIcon className="w-5 h-5" />}

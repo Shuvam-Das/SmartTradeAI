@@ -10,6 +10,7 @@ export interface Stock {
 export interface Holding extends Stock {
   quantity: number;
   avgPrice: number;
+  aiStrategyActive?: boolean;
 }
 
 export interface PortfolioSummaryData {
@@ -47,4 +48,16 @@ export interface ApiKeys {
     zerodha: string;
     tradingView: string;
     newsApi: string;
+}
+
+export interface AIStrategy {
+  symbol: string;
+  status: 'active' | 'completed' | 'cancelled';
+  targetPrice: number;
+  stopLossPrice: number;
+  avgPrice: number;
+  quantity: number;
+  activationPrice: number;
+  createdAt: string;
+  completedAt?: string;
 }

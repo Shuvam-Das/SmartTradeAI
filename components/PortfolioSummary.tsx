@@ -1,12 +1,6 @@
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { PortfolioSummaryData } from '../types';
-
-const initialSummaryData: PortfolioSummaryData = {
-  totalValue: 1256340.50,
-  todaysPL: 12580.35,
-  totalPL: 189450.75,
-};
 
 const StatCard: React.FC<{ title: string; value: string; change?: number; }> = ({ title, value, change }) => {
   const isPositive = change !== undefined && change >= 0;
@@ -29,29 +23,11 @@ const StatCard: React.FC<{ title: string; value: string; change?: number; }> = (
 };
 
 
-const PortfolioSummary: React.FC = () => {
-  const [summaryData, setSummaryData] = useState<PortfolioSummaryData>(initialSummaryData);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setSummaryData(prevData => {
-        // Simulate small, slightly positive-biased market fluctuations
-        const valueChange = (Math.random() - 0.45) * (prevData.totalValue / 5000);
-        const plChange = valueChange * (Math.random() * 0.4 + 0.8); // P&L change is related to value change
-        
-        return {
-          totalValue: prevData.totalValue + valueChange,
-          todaysPL: prevData.todaysPL + plChange,
-          totalPL: prevData.totalPL + plChange,
-        };
-      });
-    }, 1500); // Update every 1.5 seconds
-
-    return () => clearInterval(interval);
-  }, []);
-
-
-  const todaysPLPercentage = (summaryData.todaysPL / (summaryData.totalValue - summaryData.todaysPL)) * 100;
+const PortfolioSummary: React.FC<{summaryData: PortfolioSummaryData}> = ({ summaryData }) => {
+  
+  const todaysPLPercentage = (summaryData.totalValue > 0 && summaryData.totalValue - summaryData.todaysPL !== 0) 
+    ? (summaryData.todaysPL / (summaryData.totalValue - summaryData.todaysPL)) * 100 
+    : 0;
 
   return (
     <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

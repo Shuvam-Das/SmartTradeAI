@@ -2,13 +2,6 @@
 import React from 'react';
 import { Alert, AlertType } from '../types';
 
-const mockAlerts: Alert[] = [
-  { id: '1', type: AlertType.Success, message: 'Executed BUY order for RELIANCE at ₹3005.00', timestamp: '2 mins ago' },
-  { id: '2', type: AlertType.Error, message: 'Connection to Kite API failed. Retrying...', timestamp: '5 mins ago' },
-  { id: '3', type: AlertType.Warning, message: 'HDFCBANK is approaching 52-week high.', timestamp: '1 hour ago' },
-  { id: '4', type: AlertType.Info, message: 'Market opens in 30 minutes.', timestamp: '8 hours ago' },
-];
-
 const getAlertColors = (type: AlertType) => {
   switch (type) {
     case AlertType.Success:
@@ -30,12 +23,12 @@ const AlertItem: React.FC<{ alert: Alert }> = ({ alert }) => (
   </div>
 );
 
-const Alerts: React.FC = () => {
+const Alerts: React.FC<{alerts: Alert[]}> = ({ alerts }) => {
   return (
     <div className="bg-slate-800 p-6 rounded-lg shadow-lg h-full">
       <h3 className="text-xl font-semibold text-white mb-4">System Alerts</h3>
       <div className="space-y-4">
-        {mockAlerts.map((alert) => (
+        {alerts.slice(0, 4).map((alert) => (
           <AlertItem key={alert.id} alert={alert} />
         ))}
       </div>

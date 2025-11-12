@@ -1,61 +1,57 @@
+
 import React, { useState, useEffect } from 'react';
 import { Holding } from '../types';
 import PortfolioIcon from './icons/PortfolioIcon';
+import RobotIcon from './icons/RobotIcon';
+import AIStrategyModal from './AIStrategyModal';
 
-const mockHoldings: Holding[] = [
-  { symbol: 'RELIANCE', name: 'Reliance Industries', price: 3010.55, change: 45.10, changePercent: 1.52, quantity: 50, avgPrice: 2850.00 },
-  { symbol: 'TCS', name: 'Tata Consultancy', price: 3850.20, change: -12.75, changePercent: -0.33, quantity: 25, avgPrice: 3900.50 },
-  { symbol: 'HDFCBANK', name: 'HDFC Bank Ltd', price: 1680.75, change: 8.40, changePercent: 0.50, quantity: 100, avgPrice: 1550.25 },
-  { symbol: 'BAJFINANCE', name: 'Bajaj Finance Ltd', price: 7120.80, change: 120.30, changePercent: 1.72, quantity: 15, avgPrice: 6500.00 },
-  { symbol: 'TATA MOTORS', name: 'Tata Motors Ltd', price: 985.40, change: 5.10, changePercent: 0.52, quantity: 200, avgPrice: 910.80 },
-];
+interface PortfolioPageProps {
+    holdings: Holding[];
+    onActivateStrategy: (strategy: any) => void;
+}
 
-const PortfolioPage: React.FC = () => {
-    const [holdings, setHoldings] = useState<Holding[]>(mockHoldings);
+const PortfolioPage: React.FC<PortfolioPageProps> = ({ holdings, onActivateStrategy }) => {
     const [updatedSymbols, setUpdatedSymbols] = useState<Set<string>>(new Set());
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedHolding, setSelectedHolding] = useState<Holding | null>(null);
 
-
+    // This effect is now just for the flashing animation, as data comes from props
     useEffect(() => {
-        const interval = setInterval(() => {
-            const symbolsThatUpdated = new Set<string>();
+        const symbolsThatUpdated = new Set<string>();
+        holdings.forEach(h => symbolsThatUpdated.add(h.symbol)); // Assume all might have updated
 
-            setHoldings(prevHoldings => 
-                prevHoldings.map(holding => {
-                    if (Math.random() > 0.4) { // 60% chance to update
-                        const priceChange = (Math.random() - 0.5) * (holding.price / 200);
-                        const newPrice = holding.price + priceChange;
-                        symbolsThatUpdated.add(holding.symbol);
-                        return { ...holding, price: newPrice };
-                    }
-                    return holding;
-                })
-            );
-
-            if (symbolsThatUpdated.size > 0) {
-                setUpdatedSymbols(prev => new Set([...prev, ...symbolsThatUpdated]));
-                setTimeout(() => {
-                setUpdatedSymbols(prev => {
-                    const next = new Set(prev);
-                    symbolsThatUpdated.forEach(symbol => next.delete(symbol));
-                    return next;
-                });
-                }, 700);
-            }
-        }, 2500);
-        return () => clearInterval(interval);
-    }, []);
+        if (symbolsThatUpdated.size > 0) {
+            setUpdatedSymbols(prev => new Set([...prev, ...symbolsThatUpdated]));
+            const timer = setTimeout(() => {
+              setUpdatedSymbols(new Set());
+            }, 700);
+            return () => clearTimeout(timer);
+        }
+    }, [holdings]);
 
     const calculateTotals = () => {
         const totalInvestment = holdings.reduce((acc, h) => acc + (h.quantity * h.avgPrice), 0);
         const currentValue = holdings.reduce((acc, h) => acc + (h.quantity * h.price), 0);
         const totalPL = currentValue - totalInvestment;
-        const totalPLPercent = (totalPL / totalInvestment) * 100;
+        const totalPLPercent = totalInvestment > 0 ? (totalPL / totalInvestment) * 100 : 0;
         return { totalInvestment, currentValue, totalPL, totalPLPercent };
     };
     
     const totals = calculateTotals();
 
+    const handleActivateClick = (holding: Holding) => {
+        setSelectedHolding(holding);
+        setIsModalOpen(true);
+    };
+
+    const handleConfirmStrategy = (strategy: any) => {
+        onActivateStrategy(strategy);
+        setIsModalOpen(false);
+        setSelectedHolding(null);
+    }
+
     return (
+        <>
         <div>
             <h3 className="text-3xl font-medium text-white mb-6 flex items-center">
                 <PortfolioIcon className="w-8 h-8 mr-3 text-indigo-400"/>
@@ -94,15 +90,14 @@ const PortfolioPage: React.FC = () => {
                             <th className="py-3 px-4 font-medium text-right">Qty.</th>
                             <th className="py-3 px-4 font-medium text-right">Avg. Cost (₹)</th>
                             <th className="py-3 px-4 font-medium text-right">LTP (₹)</th>
-                            <th className="py-3 px-4 font-medium text-right">Unrealized P&L (₹)</th>
-                            <th className="py-3 px-4 font-medium text-right">Unrealized P&L (%)</th>
+                            <th className="py-3 px-4 font-medium text-right">P&L (%)</th>
+                            <th className="py-3 px-4 font-medium text-center">AI Actions</th>
                         </tr>
                     </thead>
                     <tbody>
                         {holdings.map((h) => {
-                            const pnl = (h.price - h.avgPrice) * h.quantity;
                             const pnlPercent = ((h.price - h.avgPrice) / h.avgPrice) * 100;
-                            const isPositive = pnl >= 0;
+                            const isPositive = pnlPercent >= 0;
                             const isUpdated = updatedSymbols.has(h.symbol);
                             const updateClass = isUpdated ? (isPositive ? 'bg-green-500/20' : 'bg-red-500/20') : '';
 
@@ -116,10 +111,23 @@ const PortfolioPage: React.FC = () => {
                                     <td className="py-3 px-4 text-slate-200 font-mono text-right">{h.avgPrice.toFixed(2)}</td>
                                     <td className="py-3 px-4 text-slate-200 font-mono text-right">{h.price.toFixed(2)}</td>
                                     <td className={`py-3 px-4 font-mono text-right ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                                        {pnl.toFixed(2)}
-                                    </td>
-                                    <td className={`py-3 px-4 font-mono text-right ${isPositive ? 'text-green-400' : 'text-red-400'}`}>
                                         {pnlPercent.toFixed(2)}%
+                                    </td>
+                                    <td className="py-3 px-4 text-center">
+                                        {h.aiStrategyActive ? (
+                                            <div className="flex items-center justify-center text-sm font-semibold text-indigo-400">
+                                                <RobotIcon className="w-5 h-5 mr-2 animate-pulse" />
+                                                <span>Active</span>
+                                            </div>
+                                        ) : (
+                                             <button 
+                                                onClick={() => handleActivateClick(h)}
+                                                className="bg-indigo-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-indigo-700 transition-colors flex items-center mx-auto"
+                                             >
+                                                <RobotIcon className="w-4 h-4 mr-1"/>
+                                                Activate AI
+                                            </button>
+                                        )}
                                     </td>
                                 </tr>
                             );
@@ -129,6 +137,15 @@ const PortfolioPage: React.FC = () => {
                 </div>
             </div>
         </div>
+        {isModalOpen && selectedHolding && (
+            <AIStrategyModal 
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                holding={selectedHolding}
+                onConfirm={handleConfirmStrategy}
+            />
+        )}
+        </>
     );
 };
 
