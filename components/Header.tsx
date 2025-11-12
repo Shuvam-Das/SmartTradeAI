@@ -28,9 +28,10 @@ const getAlertColors = (type: AlertType) => {
 interface HeaderProps {
     user: User;
     onLogout: () => void;
+    onNavigate: (page: string) => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ user, onLogout, onNavigate }) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
@@ -119,7 +120,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
            </div>
           {isProfileOpen && (
              <div className="absolute right-0 mt-3 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-20 py-2">
-                <a href="#settings" onClick={(e) => { e.preventDefault(); /* onNavigate('Settings') - Let sidebar handle it */ setIsProfileOpen(false);}} className="block px-4 py-2 text-sm text-slate-300 hover:bg-indigo-600 hover:text-white">Settings</a>
+                <a href="#settings" onClick={(e) => { e.preventDefault(); onNavigate('Settings'); setIsProfileOpen(false);}} className="block px-4 py-2 text-sm text-slate-300 hover:bg-indigo-600 hover:text-white">Settings</a>
                 <a href="#logout" onClick={(e) => { e.preventDefault(); onLogout(); }} className="block px-4 py-2 text-sm text-slate-300 hover:bg-indigo-600 hover:text-white">Logout</a>
              </div>
           )}

@@ -203,7 +203,7 @@ const App: React.FC = () => {
     <div className="flex h-screen bg-slate-900 overflow-hidden">
       <Sidebar activePage={activePage} onNavigate={setActivePage} onLogout={handleLogout} />
       <div className="flex-1 flex flex-col overflow-hidden">
-        <Header user={user!} onLogout={handleLogout}/>
+        <Header user={user!} onLogout={handleLogout} onNavigate={setActivePage} />
         <main className="flex-1 overflow-x-hidden overflow-y-auto">
           <div className="container mx-auto px-6 py-8 page-enter">
             {renderPage()}
