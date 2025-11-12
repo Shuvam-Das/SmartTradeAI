@@ -128,6 +128,30 @@ This view considers the near-term challenges and risks that could continue to we
 **Trading View:**
 *   **Strong Resistance:** The stock faces a significant hurdle at the **₹1750** level.
 *   **Downside Risk:** A decisive break below the **₹1650** support could lead to a further decline towards **₹1580**.`;
+                } else if (prompt.includes("bajfinance") && prompt.includes("bullish")) {
+                    responseText = `**Bullish Analysis for Bajaj Finance (BAJFINANCE):**
+
+This view highlights the strong growth drivers for this leading NBFC.
+
+*   **Dominant Market Position:** A clear leader in consumer finance with a massive, sticky customer base and unparalleled brand recognition.
+*   **Sustained High Growth:** The company has a consistent track record of delivering sector-leading AUM growth and profitability.
+*   **Digital Ecosystem:** Its super-app and digital offerings are driving customer acquisition and engagement, creating a powerful fintech moat.
+
+**Trading View:**
+*   **Strong Support:** The stock has a strong support zone around **₹7000**.
+*   **Upside Potential:** A break above its recent high of **₹7500** could signal a new leg up towards **₹8000**.`;
+                } else if (prompt.includes("bajfinance") && prompt.includes("bearish")) {
+                    responseText = `**Bearish Analysis for Bajaj Finance (BAJFINANCE):**
+
+This view considers the potential risks and competitive pressures facing the company.
+
+*   **Intensifying Competition:** The consumer lending space is becoming crowded with banks and new fintech players becoming more aggressive, which could put pressure on margins.
+*   **Regulatory Risk:** As a systemically important NBFC, it faces constant regulatory scrutiny. Any adverse changes in regulations could impact its business model.
+*   **Premium Valuation:** The stock consistently trades at a high valuation, making it vulnerable to sharp corrections during periods of market uncertainty or if growth slows.
+
+**Trading View:**
+*   **Key Resistance:** The stock may face resistance at the **₹7500** level.
+*   **Downside Risk:** A break below the key support of **₹7000** could lead to a correction towards **₹6500**.`;
                 } else if (prompt.includes("tata motors")) {
                     responseText = `**Analysis for Tata Motors (TATAMOTORS):**
 
