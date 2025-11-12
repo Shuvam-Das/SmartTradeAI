@@ -26,7 +26,7 @@ class MockGoogleGenAI {
                 const prompt = params.contents.toLowerCase();
                 let responseText = "I am SmartTradeAI. How can I assist with your trading strategy today?";
 
-                if (prompt.includes("trading strategy for tata motors")) {
+                if (prompt.includes("trading strategy") && prompt.includes("tata motors")) {
                      responseText = `**Simple Momentum Strategy for TATA MOTORS:**
 
 This strategy aims to capitalize on the stock's current upward trend.
