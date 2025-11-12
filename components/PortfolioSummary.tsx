@@ -1,6 +1,6 @@
 import React from 'react';
 import { PortfolioSummaryData } from '../types';
-import DollarIcon from './icons/DollarIcon';
+import RupeeIcon from './icons/RupeeIcon';
 import TrendingUpIcon from './icons/TrendingUpIcon';
 
 const StatCard: React.FC<{ title: string; value: string; icon: React.ReactNode; change?: number; isPL?: boolean; }> = ({ title, value, icon, change, isPL }) => {
@@ -54,7 +54,7 @@ const PortfolioSummary: React.FC<{summaryData: PortfolioSummaryData}> = ({ summa
       <StatCard
         title="Total Portfolio Value"
         value={`₹${summaryData.totalValue.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`}
-        icon={<DollarIcon className="w-6 h-6 text-indigo-400" />}
+        icon={<RupeeIcon className="w-6 h-6 text-indigo-400" />}
       />
       <StatCard
         title="Today's P&L"
