@@ -135,7 +135,7 @@ const AIAnalyst: React.FC = () => {
             <button onClick={() => handlePresetClick("What are the key support and resistance levels?", 'TATA MOTORS')} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Technicals for TATA MOTORS</button>
             <button onClick={() => handlePresetClick("What is the short-term outlook and top stock picks?", 'None', 'Banking')} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Banking Sector Outlook</button>
             <button 
-                onClick={() => handlePresetClick('Generate a simple trading strategy.')}
+                onClick={() => handlePresetClick(`Generate a simple trading strategy for ${selectedSymbol}.`)}
                 disabled={selectedSymbol === 'None'}
                 className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                 title={selectedSymbol === 'None' ? 'Select a stock symbol first' : `Generate strategy for ${selectedSymbol}`}

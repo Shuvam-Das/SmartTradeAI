@@ -1,4 +1,3 @@
-
 // This is a MOCK service. In a real application, you would implement the actual Gemini API calls.
 // Note: The @google/genai package is not actually installed in this environment,
 // so this is for demonstration purposes.
@@ -41,8 +40,10 @@ Based on recent volatility and short-term momentum indicators, a balanced risk-r
 *   This strategy aims for a 2:1 risk-reward ratio.
 *   The levels are set outside of typical daily price fluctuations to avoid premature exits.
 *   Activating this will allow the AI agent to monitor and execute the trade automatically.`;
-                } else if (prompt.includes("trading strategy") && prompt.includes("tata motors")) {
-                     responseText = `**Simple Momentum Strategy for TATA MOTORS:**
+                } else if (prompt.includes("trading strategy")) {
+                    const symbolMatch = prompt.match(/for (?:the stock )?([\w\s\d\.-]+)/);
+                    const symbol = symbolMatch && symbolMatch[1] ? symbolMatch[1].trim().toUpperCase() : 'the selected stock';
+                     responseText = `**Simple Momentum Strategy for ${symbol}:**
 
 This strategy aims to capitalize on the stock's current upward trend.
 
