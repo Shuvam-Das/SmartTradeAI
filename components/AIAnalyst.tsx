@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { getAIAnalysis } from '../services/geminiService';
 import AIIcon from './icons/AIIcon';
@@ -21,6 +22,57 @@ const Selector: React.FC<{label: string, value: string, onChange: (e: React.Chan
     </select>
     </div>
 );
+
+const SimpleMarkdownRenderer: React.FC<{ text: string }> = ({ text }) => {
+  const parseLine = (line: string) => {
+    // This regex splits the string by the bolded parts, keeping the delimiters
+    const parts = line.split(/(\*\*.*?\*\*)/g).filter(Boolean);
+    return (
+      <>
+        {parts.map((part, index) => {
+          if (part.startsWith('**') && part.endsWith('**')) {
+            return <strong key={index}>{part.slice(2, -2)}</strong>;
+          }
+          return part;
+        })}
+      </>
+    );
+  };
+
+  const elements: React.ReactNode[] = [];
+  let currentListItems: string[] = [];
+  const lines = text.split('\n');
+
+  const flushList = (key: string) => {
+    if (currentListItems.length > 0) {
+      elements.push(
+        <ul key={key} className="list-disc list-inside space-y-1 my-2 pl-2">
+          {currentListItems.map((item, itemIndex) => (
+            <li key={itemIndex}>{parseLine(item)}</li>
+          ))}
+        </ul>
+      );
+      currentListItems = [];
+    }
+  };
+
+  lines.forEach((line, i) => {
+    const trimmedLine = line.trim();
+
+    if (trimmedLine.startsWith('* ')) {
+      currentListItems.push(trimmedLine.substring(2));
+    } else {
+      flushList(`ul-${i}`);
+      if (trimmedLine) {
+        elements.push(<p key={`p-${i}`} className="my-1">{parseLine(trimmedLine)}</p>);
+      }
+    }
+  });
+
+  flushList('ul-end');
+
+  return <>{elements}</>;
+};
 
 
 const AIAnalyst: React.FC = () => {
@@ -58,10 +110,10 @@ const AIAnalyst: React.FC = () => {
     }
   };
 
-  const handlePresetClick = (presetPrompt: string) => {
+  const handlePresetClick = (presetPrompt: string, symbol: string = 'None', sector: string = 'None') => {
     setPrompt(presetPrompt);
-    setSelectedSymbol('None');
-    setSelectedSector('None');
+    setSelectedSymbol(symbol);
+    setSelectedSector(sector);
   };
   
   return (
@@ -74,9 +126,17 @@ const AIAnalyst: React.FC = () => {
       <div className="mb-4">
         <p className="text-sm text-slate-400 mb-2">Try asking:</p>
         <div className="flex flex-wrap gap-2">
-            <button onClick={() => handlePresetClick("Analyze my portfolio for risks")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Analyze my portfolio</button>
-            <button onClick={() => handlePresetClick("What is your view on Nifty 50 this week?")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Nifty 50 view</button>
-            <button onClick={() => handlePresetClick("Suggest a good long-term stock in the EV sector")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">EV stock suggestion</button>
+            <button onClick={() => handlePresetClick("Analyze my portfolio for risks and suggest diversification.")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Analyze Portfolio</button>
+            <button onClick={() => handlePresetClick("What are the key support and resistance levels?", 'TATA MOTORS')} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Technicals for TATA MOTORS</button>
+            <button onClick={() => handlePresetClick("What is the short-term outlook and top stock picks?", 'None', 'Banking')} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Banking Sector Outlook</button>
+            <button 
+                onClick={() => handlePresetClick(`Generate a simple trading strategy for ${selectedSymbol}.`)}
+                disabled={selectedSymbol === 'None'}
+                className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                title={selectedSymbol === 'None' ? 'Select a stock symbol first' : `Generate strategy for ${selectedSymbol}`}
+            >
+                Trading Strategy
+            </button>
         </div>
       </div>
 
@@ -98,7 +158,7 @@ const AIAnalyst: React.FC = () => {
         />
         <button
           onClick={handleAskAI}
-          disabled={isLoading}
+          disabled={isLoading || !prompt.trim()}
           className="mt-2 w-full bg-indigo-600 text-white font-bold py-2 px-4 rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-opacity-50 transition-colors disabled:bg-slate-600 disabled:cursor-not-allowed"
         >
           {isLoading ? 'Thinking...' : 'Get Insights'}
@@ -107,7 +167,7 @@ const AIAnalyst: React.FC = () => {
 
       {(isLoading || response) && (
         <div className="mt-4 flex-1 min-h-0">
-          <div className="bg-slate-900/50 border border-slate-700 rounded-md h-full overflow-y-auto p-4">
+          <div className="bg-slate-900/50 border border-slate-700 rounded-md h-full overflow-y-auto p-4 text-sm text-slate-300">
             <h4 className="font-semibold text-slate-300 mb-2">AI Response:</h4>
             {isLoading && !response && (
               <div className="flex items-center space-x-2 text-slate-400">
@@ -117,7 +177,7 @@ const AIAnalyst: React.FC = () => {
                 <span>Analyzing data...</span>
               </div>
             )}
-            <p className="text-sm text-slate-300 whitespace-pre-wrap">{response}</p>
+            {response && <SimpleMarkdownRenderer text={response} />}
           </div>
         </div>
       )}

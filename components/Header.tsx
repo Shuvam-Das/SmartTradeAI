@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import BellIcon from './icons/BellIcon';
-import { Alert, AlertType } from '../types';
+import { Alert, AlertType, User } from '../types';
 
 // Mock alerts for the dropdown
 const mockAlerts: Alert[] = [
@@ -26,22 +26,33 @@ const getAlertColors = (type: AlertType) => {
   }
 };
 
+interface HeaderProps {
+    user: User;
+    onLogout: () => void;
+}
 
-const Header: React.FC = () => {
+const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
   const notificationsRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (notificationsRef.current && !notificationsRef.current.contains(event.target as Node)) {
-        setIsNotificationsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, []);
+  const useOutsideAlerter = (ref: React.RefObject<HTMLDivElement>, setOpenState: React.Dispatch<React.SetStateAction<boolean>>) => {
+     useEffect(() => {
+        function handleClickOutside(event: MouseEvent) {
+          if (ref.current && !ref.current.contains(event.target as Node)) {
+            setOpenState(false);
+          }
+        }
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+          document.removeEventListener('mousedown', handleClickOutside);
+        };
+      }, [ref, setOpenState]);
+  }
+ 
+  useOutsideAlerter(notificationsRef, setIsNotificationsOpen);
+  useOutsideAlerter(profileRef, setIsProfileOpen);
 
 
   return (
@@ -72,6 +83,7 @@ const Header: React.FC = () => {
           <button
             onClick={() => setIsNotificationsOpen((prev) => !prev)}
             className="flex mx-4 text-slate-400 hover:text-indigo-400 focus:outline-none"
+            aria-label="Toggle notifications"
           >
             <BellIcon className="h-6 w-6" />
           </button>
@@ -92,14 +104,26 @@ const Header: React.FC = () => {
           )}
         </div>
 
-        <div className="relative">
-          <button className="relative z-10 block w-8 h-8 overflow-hidden rounded-full shadow focus:outline-none">
-            <img
-              className="object-cover w-full h-full"
-              src="https://picsum.photos/100/100"
-              alt="Your avatar"
-            />
-          </button>
+        <div className="relative" ref={profileRef}>
+           <div className="flex items-center cursor-pointer" onClick={() => setIsProfileOpen(prev => !prev)}>
+             <span className="mr-3 text-right hidden md:block">
+                <span className="font-semibold text-white">{user.name}</span>
+                <span className="block text-xs text-slate-400">Trader</span>
+             </span>
+             <button aria-label="Toggle user menu" className="relative z-10 block w-10 h-10 overflow-hidden rounded-full shadow focus:outline-none border-2 border-slate-600 hover:border-indigo-500 transition-colors">
+                <img
+                  className="object-cover w-full h-full"
+                  src={user.avatarUrl}
+                  alt="Your avatar"
+                />
+              </button>
+           </div>
+          {isProfileOpen && (
+             <div className="absolute right-0 mt-3 w-48 bg-slate-800 border border-slate-700 rounded-lg shadow-xl z-20 py-2">
+                <a href="#settings" onClick={(e) => { e.preventDefault(); /* onNavigate('Settings') - Let sidebar handle it */ setIsProfileOpen(false);}} className="block px-4 py-2 text-sm text-slate-300 hover:bg-indigo-600 hover:text-white">Settings</a>
+                <a href="#logout" onClick={(e) => { e.preventDefault(); onLogout(); }} className="block px-4 py-2 text-sm text-slate-300 hover:bg-indigo-600 hover:text-white">Logout</a>
+             </div>
+          )}
         </div>
       </div>
     </header>

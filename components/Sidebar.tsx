@@ -13,13 +13,18 @@ interface NavLinkProps {
   label: string;
   active?: boolean;
   onClick: () => void;
+  disabled?: boolean;
 }
 
-const NavLink: React.FC<NavLinkProps> = ({ icon, label, active, onClick }) => (
+const NavLink: React.FC<NavLinkProps> = ({ icon, label, active, onClick, disabled }) => (
   <a
     href="#"
-    onClick={(e) => { e.preventDefault(); onClick(); }}
-    className={`flex items-center px-4 py-2 mt-5 text-slate-400 rounded-md hover:bg-slate-700 hover:text-slate-200 transition-colors duration-200 ${
+    onClick={(e) => { e.preventDefault(); if (!disabled) onClick(); }}
+    className={`flex items-center px-4 py-2 mt-5 text-slate-400 rounded-md transition-colors duration-200 ${
+      disabled 
+        ? 'cursor-not-allowed opacity-50'
+        : 'hover:bg-slate-700 hover:text-slate-200'
+    } ${
       active ? 'bg-slate-700 text-slate-100 shadow-lg' : ''
     }`}
   >
@@ -31,9 +36,10 @@ const NavLink: React.FC<NavLinkProps> = ({ icon, label, active, onClick }) => (
 interface SidebarProps {
   activePage: string;
   onNavigate: (page: string) => void;
+  onLogout: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate }) => {
+const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, onLogout }) => {
   return (
     <div className="flex flex-col w-64 h-screen px-4 py-8 bg-slate-800 border-r border-slate-700">
       <h2 className="text-3xl font-semibold text-white flex items-center">
@@ -52,7 +58,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate }) => {
             icon={<PortfolioIcon className="w-5 h-5" />}
             label="Portfolio"
             active={activePage === 'Portfolio'}
-            onClick={() => onNavigate('Portfolio')} // Inactive for now, but wired up
+            onClick={() => onNavigate('Portfolio')}
           />
           <NavLink
             icon={<ScreenerIcon className="w-5 h-5" />}
@@ -65,12 +71,13 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate }) => {
             label="AI Analyst"
             active={activePage === 'AI Analyst'}
             onClick={() => onNavigate('Dashboard')} // AI Analyst is on the dashboard
+            disabled={activePage !== 'Dashboard'}
           />
           <NavLink
             icon={<SettingsIcon className="w-5 h-5" />}
             label="Settings"
             active={activePage === 'Settings'}
-            onClick={() => {}} // Inactive
+            onClick={() => onNavigate('Settings')}
           />
         </nav>
 
@@ -78,7 +85,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate }) => {
            <NavLink
             icon={<LogoutIcon className="w-5 h-5" />}
             label="Logout"
-            onClick={() => {}}
+            onClick={onLogout}
           />
         </div>
       </div>

@@ -1,6 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Stock } from '../types';
+import TradeModal from './TradeModal';
 
 const mockWatchlist: Stock[] = [
   { symbol: 'RELIANCE', name: 'Reliance Industries', price: 3010.55, change: 45.10, changePercent: 1.52 },
@@ -15,6 +16,8 @@ const mockWatchlist: Stock[] = [
 const Watchlist: React.FC = () => {
   const [watchlist, setWatchlist] = useState<Stock[]>(mockWatchlist);
   const [updatedSymbols, setUpdatedSymbols] = useState<Set<string>>(new Set());
+  const [isTradeModalOpen, setIsTradeModalOpen] = useState(false);
+  const [selectedStock, setSelectedStock] = useState<Stock | null>(null);
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -53,48 +56,70 @@ const Watchlist: React.FC = () => {
     return () => clearInterval(interval);
   }, []);
 
+  const handleTradeClick = (stock: Stock) => {
+    setSelectedStock(stock);
+    setIsTradeModalOpen(true);
+  }
+
+  const handleOrderPlaced = (order: any) => {
+    console.log("Order placed:", order);
+    // Here you would typically show a success toast/notification
+  };
+
   return (
-    <div className="bg-slate-800 p-6 rounded-lg shadow-lg h-full">
-      <h3 className="text-xl font-semibold text-white mb-4">My Watchlist</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-left">
-          <thead>
-            <tr className="border-b border-slate-700 text-sm text-slate-400">
-              <th className="py-3 px-4 font-medium">Symbol</th>
-              <th className="py-3 px-4 font-medium">Price (₹)</th>
-              <th className="py-3 px-4 font-medium">Change (₹)</th>
-              <th className="py-3 px-4 font-medium">Change (%)</th>
-            </tr>
-          </thead>
-          <tbody>
-            {watchlist.map((stock) => {
-              const isUpdated = updatedSymbols.has(stock.symbol);
-              const priceJustChangedUp = isUpdated && stock.price > mockWatchlist.find(s => s.symbol === stock.symbol)!.price; // Simplified comparison for effect
-               const priceJustChangedDown = isUpdated && stock.price < mockWatchlist.find(s => s.symbol === stock.symbol)!.price;
-
-
-              const updateClass = isUpdated ? (priceJustChangedUp ? 'bg-green-500/20' : 'bg-red-500/20') : '';
-
-              return (
-              <tr key={stock.symbol} className={`border-b border-slate-700 hover:bg-slate-700/50 transition-colors duration-700 ${updateClass}`}>
-                <td className="py-3 px-4">
-                    <div className="font-bold text-slate-200">{stock.symbol}</div>
-                    <div className="text-xs text-slate-400">{stock.name}</div>
-                </td>
-                <td className="py-3 px-4 text-slate-200 font-mono">{stock.price.toFixed(2)}</td>
-                <td className={`py-3 px-4 font-mono ${stock.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {stock.change.toFixed(2)}
-                </td>
-                <td className={`py-3 px-4 font-mono ${stock.changePercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                  {stock.changePercent.toFixed(2)}%
-                </td>
+    <>
+      <div className="bg-slate-800 p-6 rounded-lg shadow-lg h-full">
+        <h3 className="text-xl font-semibold text-white mb-4">My Watchlist</h3>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left">
+            <thead>
+              <tr className="border-b border-slate-700 text-sm text-slate-400">
+                <th className="py-3 px-4 font-medium">Symbol</th>
+                <th className="py-3 px-4 font-medium">Price (₹)</th>
+                <th className="py-3 px-4 font-medium">Change (%)</th>
+                <th className="py-3 px-4 font-medium">Actions</th>
               </tr>
-              );
-            })}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {watchlist.map((stock) => {
+                const isUpdated = updatedSymbols.has(stock.symbol);
+                const isPositiveChange = stock.change >= 0;
+                const updateClass = isUpdated ? (isPositiveChange ? 'bg-green-500/20' : 'bg-red-500/20') : '';
+
+                return (
+                <tr key={stock.symbol} className={`border-b border-slate-700 hover:bg-slate-700/50 transition-colors duration-700 ${updateClass}`}>
+                  <td className="py-3 px-4">
+                      <div className="font-bold text-slate-200">{stock.symbol}</div>
+                      <div className="text-xs text-slate-400">{stock.name}</div>
+                  </td>
+                  <td className="py-3 px-4 text-slate-200 font-mono">{stock.price.toFixed(2)}</td>
+                  <td className={`py-3 px-4 font-mono ${isPositiveChange ? 'text-green-400' : 'text-red-400'}`}>
+                    {stock.changePercent.toFixed(2)}%
+                  </td>
+                  <td className="py-3 px-4">
+                    <button 
+                      onClick={() => handleTradeClick(stock)}
+                      className="bg-indigo-600 text-white text-xs font-bold py-1 px-3 rounded-md hover:bg-indigo-700 transition-colors"
+                    >
+                      Trade
+                    </button>
+                  </td>
+                </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
-    </div>
+      {isTradeModalOpen && selectedStock && (
+        <TradeModal 
+            isOpen={isTradeModalOpen} 
+            onClose={() => setIsTradeModalOpen(false)}
+            stock={selectedStock}
+            onOrderSubmit={handleOrderPlaced}
+        />
+      )}
+    </>
   );
 };
 

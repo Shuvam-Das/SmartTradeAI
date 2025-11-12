@@ -7,6 +7,11 @@ export interface Stock {
   changePercent: number;
 }
 
+export interface Holding extends Stock {
+  quantity: number;
+  avgPrice: number;
+}
+
 export interface PortfolioSummaryData {
   totalValue: number;
   todaysPL: number;
@@ -30,4 +35,16 @@ export interface Alert {
   type: AlertType;
   message: string;
   timestamp: string;
+}
+
+export interface User {
+  name: string;
+  email: string;
+  avatarUrl: string;
+}
+
+export interface ApiKeys {
+    zerodha: string;
+    tradingView: string;
+    newsApi: string;
 }
