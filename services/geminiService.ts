@@ -2,6 +2,8 @@
 // Note: The @google/genai package is not actually installed in this environment,
 // so this is for demonstration purposes.
 
+import { StockDetails } from "../types";
+
 // Mocking the GoogleGenAI class and its methods
 // In a real project, you would import this: import { GoogleGenAI } from "@google/genai";
 class MockGoogleGenAI {
@@ -78,6 +80,54 @@ This view considers potential headwinds and risks that could impact the stock's 
 **Trading View:**
 *   **Potential for Correction:** If the stock fails to break the strong resistance at **₹1050**, it could see a correction back to its primary support level around **₹940**.
 *   **Risk Management:** A break below **₹940** would be a significant bearish signal and could trigger a deeper sell-off.`;
+                } else if (prompt.includes("reliance") && prompt.includes("bullish")) {
+                    responseText = `**Bullish Analysis for Reliance Industries (RELIANCE):**
+
+This analysis focuses on the positive catalysts driving potential growth for Reliance.
+
+*   **Retail & Telecom Dominance:** Jio and Reliance Retail are market leaders with massive subscriber bases, providing stable and growing revenue streams.
+*   **New Energy Business:** The company's aggressive push into green energy (solar, hydrogen) is a significant long-term growth driver that could lead to a major re-rating.
+*   **Strong Financials:** A robust balance sheet and strong cash flows allow for continued large-scale investments and acquisitions.
+
+**Trading View:**
+*   **Key Support:** The stock has strong support near **₹2950**.
+*   **Upside Target:** A sustained move above **₹3100** could pave the way for a test of all-time highs.`;
+                } else if (prompt.includes("reliance") && prompt.includes("bearish")) {
+                    responseText = `**Bearish Analysis for Reliance Industries (RELIANCE):**
+
+This analysis considers potential risks that could pressure the stock.
+
+*   **Valuation Concerns:** The stock trades at a premium valuation, making it susceptible to corrections during market downturns.
+*   **Regulatory Scrutiny:** As a dominant player in multiple sectors, Reliance faces ongoing regulatory oversight which could pose risks.
+*   **Execution Risk in New Ventures:** The ambitious green energy plans involve significant capital expenditure and execution risk. Any delays could disappoint investors.
+
+**Trading View:**
+*   **Resistance:** The stock faces significant resistance near the **₹3100** level.
+*   **Downside Risk:** A break below the key support of **₹2950** could trigger a correction towards **₹2800**.`;
+                } else if (prompt.includes("hdfcbank") && prompt.includes("bullish")) {
+                    responseText = `**Bullish Analysis for HDFC Bank (HDFCBANK):**
+
+This view focuses on the long-term strengths and recovery potential of the banking giant.
+
+*   **Market Leader:** As one of India's largest private sector banks, it benefits from a strong brand, vast distribution network, and a large, stable deposit base.
+*   **Post-Merger Synergies:** The merger with HDFC Ltd is expected to unlock significant cross-selling opportunities and improve the loan book mix over the long term.
+*   **Attractive Valuation:** The stock has seen a correction and is trading at valuations that are attractive relative to its historical premium, presenting a potential entry point for long-term investors.
+
+**Trading View:**
+*   **Key Support:** A strong support base has formed around the **₹1650** level.
+*   **Potential Target:** A sustained move above **₹1750** could signal a reversal and a move towards **₹1850**.`;
+                } else if (prompt.includes("hdfcbank") && prompt.includes("bearish")) {
+                     responseText = `**Bearish Analysis for HDFC Bank (HDFCBANK):**
+
+This view considers the near-term challenges and risks that could continue to weigh on the stock.
+
+*   **Margin Pressure:** Increased competition for deposits and the integration of a lower-yielding mortgage book could put pressure on Net Interest Margins (NIMs) in the short to medium term.
+*   **FII Outflows:** The stock has been subject to significant selling pressure from foreign institutional investors, which could continue if global macro concerns persist.
+*   **Integration Hurdles:** Integrating a large entity like HDFC Ltd comes with execution risks and potential for short-term operational disruptions.
+
+**Trading View:**
+*   **Strong Resistance:** The stock faces a significant hurdle at the **₹1750** level.
+*   **Downside Risk:** A decisive break below the **₹1650** support could lead to a further decline towards **₹1580**.`;
                 } else if (prompt.includes("tata motors")) {
                     responseText = `**Analysis for Tata Motors (TATAMOTORS):**
 
@@ -143,6 +193,13 @@ The EV sector is a high-growth area supported by government policies and increas
 *   **Consistent Growth:** Has a long track record of delivering high revenue and profit growth year over year.
 *   **Digital Transformation:** Aggressive investment in their digital ecosystem and app is improving customer acquisition and operational efficiency.
 *   **Valuation:** While trading at a premium valuation, it is often justified by its superior growth metrics compared to peers. A good stock for long-term growth portfolios.`;
+                } else if (prompt.includes("find oversold tech stocks")) {
+                    responseText = `**AI Analysis: Oversold Tech Stocks**
+
+Based on your criteria (RSI < 30 in the IT Sector), here are a couple of potential opportunities:
+
+*   **INFY (Infosys Ltd):** The stock has recently seen a sharp pullback due to broader market concerns, pushing its RSI into oversold territory. This could be a buying opportunity for long-term investors, as the company's fundamentals remain strong.
+*   **WIPRO (Wipro Ltd):** Wipro has been underperforming the sector, and its RSI is currently below 30. A mean reversion trade could be considered, but it's important to watch for a confirmation of a trend reversal.`;
                 }
 
 
@@ -165,5 +222,55 @@ export const getAIAnalysis = async (prompt: string): Promise<string> => {
     } catch (error) {
         console.error("Error fetching AI analysis:", error);
         return "An error occurred while communicating with the AI. Please check the console for details.";
+    }
+};
+
+export const getStockDetails = async (symbol: string): Promise<StockDetails> => {
+    // Simulate network delay for fetching details
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    console.log("Fetching details for:", symbol);
+
+    // Mock data for different stocks
+    switch (symbol) {
+        case 'BAJFINANCE':
+            return {
+                marketCap: '₹4,42,000 Cr',
+                peRatio: 35.8,
+                dividendYield: '0.51%',
+                eps: 201.2,
+                bookValue: 1540.8,
+                overview: "Bajaj Finance Limited is one of India's largest non-banking financial companies (NBFCs). The company deals in consumer finance, SME and commercial lending, and wealth management.",
+                aiRationale: "Dominant player in consumer finance with a massive customer base. Consistent high revenue and profit growth, coupled with a successful digital transformation, justifies its premium valuation for long-term growth investors."
+            };
+        case 'INFY':
+            return {
+                marketCap: '₹6,05,000 Cr',
+                peRatio: 23.5,
+                dividendYield: '2.50%',
+                eps: 61.7,
+                bookValue: 250.4,
+                overview: "Infosys Limited is a global leader in next-generation digital services and consulting. It enables clients in more than 50 countries to navigate their digital transformation.",
+                aiRationale: "A blue-chip IT stock currently in oversold territory due to market pullback. Strong fundamentals, global presence, and a healthy dividend yield make it an attractive long-term buying opportunity at current levels."
+            };
+        case 'WIPRO':
+             return {
+                marketCap: '₹2,35,000 Cr',
+                peRatio: 20.1,
+                dividendYield: '1.20%',
+                eps: 22.4,
+                bookValue: 155.6,
+                overview: "Wipro Limited is a leading global information technology, consulting and business process services company. They harness the power of cognitive computing, hyper-automation, robotics, cloud, analytics and emerging technologies.",
+                aiRationale: "Another major IT player that has underperformed the sector, pushing its technical indicators into the oversold zone. While facing some near-term headwinds, it presents a potential value play or mean reversion trade opportunity for investors."
+             };
+        default:
+            return {
+                marketCap: 'N/A',
+                peRatio: 'N/A',
+                dividendYield: 'N/A',
+                eps: 0,
+                bookValue: 0,
+                overview: "Detailed information for this stock is not available in the mock data set.",
+                aiRationale: "AI analysis could not be performed as detailed financial data is unavailable."
+            };
     }
 };

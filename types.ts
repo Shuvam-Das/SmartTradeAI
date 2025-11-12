@@ -5,6 +5,17 @@ export interface Stock {
   price: number;
   change: number;
   changePercent: number;
+  details?: StockDetails;
+}
+
+export interface StockDetails {
+  marketCap: string;
+  peRatio: number | string;
+  dividendYield: number | string;
+  eps: number;
+  bookValue: number;
+  overview: string;
+  aiRationale: string;
 }
 
 export interface Holding extends Stock {
