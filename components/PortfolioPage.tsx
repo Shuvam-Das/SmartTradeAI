@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Holding } from '../types';
 import PortfolioIcon from './icons/PortfolioIcon';
@@ -13,16 +12,36 @@ const mockHoldings: Holding[] = [
 
 const PortfolioPage: React.FC = () => {
     const [holdings, setHoldings] = useState<Holding[]>(mockHoldings);
+    const [updatedSymbols, setUpdatedSymbols] = useState<Set<string>>(new Set());
 
-    // This effect could be used to fetch live prices and update P&L in real-time
+
     useEffect(() => {
         const interval = setInterval(() => {
-             setHoldings(prevHoldings => prevHoldings.map(holding => {
-                 const priceChange = (Math.random() - 0.5) * (holding.price / 200);
-                 const newPrice = holding.price + priceChange;
-                 return { ...holding, price: newPrice };
-             }));
-        }, 3000);
+            const symbolsThatUpdated = new Set<string>();
+
+            setHoldings(prevHoldings => 
+                prevHoldings.map(holding => {
+                    if (Math.random() > 0.4) { // 60% chance to update
+                        const priceChange = (Math.random() - 0.5) * (holding.price / 200);
+                        const newPrice = holding.price + priceChange;
+                        symbolsThatUpdated.add(holding.symbol);
+                        return { ...holding, price: newPrice };
+                    }
+                    return holding;
+                })
+            );
+
+            if (symbolsThatUpdated.size > 0) {
+                setUpdatedSymbols(prev => new Set([...prev, ...symbolsThatUpdated]));
+                setTimeout(() => {
+                setUpdatedSymbols(prev => {
+                    const next = new Set(prev);
+                    symbolsThatUpdated.forEach(symbol => next.delete(symbol));
+                    return next;
+                });
+                }, 700);
+            }
+        }, 2500);
         return () => clearInterval(interval);
     }, []);
 
@@ -84,8 +103,11 @@ const PortfolioPage: React.FC = () => {
                             const pnl = (h.price - h.avgPrice) * h.quantity;
                             const pnlPercent = ((h.price - h.avgPrice) / h.avgPrice) * 100;
                             const isPositive = pnl >= 0;
+                            const isUpdated = updatedSymbols.has(h.symbol);
+                            const updateClass = isUpdated ? (isPositive ? 'bg-green-500/20' : 'bg-red-500/20') : '';
+
                             return (
-                                <tr key={h.symbol} className="border-t border-slate-700 hover:bg-slate-700/50">
+                                <tr key={h.symbol} className={`border-t border-slate-700 hover:bg-slate-700/50 transition-colors duration-700 ${updateClass}`}>
                                     <td className="py-3 px-4">
                                         <div className="font-bold text-slate-200">{h.symbol}</div>
                                         <div className="text-xs text-slate-400">{h.name}</div>

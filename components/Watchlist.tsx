@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Stock } from '../types';
 import TradeModal from './TradeModal';
@@ -21,37 +20,41 @@ const Watchlist: React.FC = () => {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      let symbolToUpdate: string | null = null;
+      const symbolsToUpdate = new Set<string>();
       
       setWatchlist(prevList => {
         const newList = [...prevList];
-        const randomIndex = Math.floor(Math.random() * newList.length);
-        const stockToUpdate = { ...newList[randomIndex] };
-        symbolToUpdate = stockToUpdate.symbol;
-
-        const priceChange = (Math.random() - 0.5) * (stockToUpdate.price / 150); // smaller, more realistic ticks
-        const newPrice = stockToUpdate.price + priceChange;
-
-        stockToUpdate.price = newPrice;
-        stockToUpdate.change += priceChange;
-        stockToUpdate.changePercent = (stockToUpdate.change / (newPrice - stockToUpdate.change)) * 100;
+        // Update 1 to 3 stocks at a time for more dynamism
+        const updateCount = Math.floor(Math.random() * 3) + 1;
         
-        newList[randomIndex] = stockToUpdate;
+        for (let i = 0; i < updateCount; i++) {
+            const randomIndex = Math.floor(Math.random() * newList.length);
+            const stockToUpdate = { ...newList[randomIndex] };
+            
+            const priceChange = (Math.random() - 0.5) * (stockToUpdate.price / 150);
+            const newPrice = stockToUpdate.price + priceChange;
+
+            stockToUpdate.price = newPrice;
+            stockToUpdate.change += priceChange;
+            stockToUpdate.changePercent = (stockToUpdate.change / (newPrice - stockToUpdate.change)) * 100;
+            
+            newList[randomIndex] = stockToUpdate;
+            symbolsToUpdate.add(stockToUpdate.symbol);
+        }
         return newList;
       });
 
-      if (symbolToUpdate) {
-        const symbol = symbolToUpdate;
-        setUpdatedSymbols(prev => new Set(prev).add(symbol));
+      if (symbolsToUpdate.size > 0) {
+        setUpdatedSymbols(prev => new Set([...prev, ...symbolsToUpdate]));
         setTimeout(() => {
           setUpdatedSymbols(prev => {
             const next = new Set(prev);
-            next.delete(symbol);
+            symbolsToUpdate.forEach(symbol => next.delete(symbol));
             return next;
           });
         }, 700);
       }
-    }, 2000); // Update every 2 seconds
+    }, 1500); // Update more frequently
 
     return () => clearInterval(interval);
   }, []);
