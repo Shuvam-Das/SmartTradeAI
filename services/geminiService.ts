@@ -200,6 +200,12 @@ Based on your criteria (RSI < 30 in the IT Sector), here are a couple of potenti
 
 *   **INFY (Infosys Ltd):** The stock has recently seen a sharp pullback due to broader market concerns, pushing its RSI into oversold territory. This could be a buying opportunity for long-term investors, as the company's fundamentals remain strong.
 *   **WIPRO (Wipro Ltd):** Wipro has been underperforming the sector, and its RSI is currently below 30. A mean reversion trade could be considered, but it's important to watch for a confirmation of a trend reversal.`;
+                } else if (prompt.includes("find stocks with a golden cross")) {
+                    responseText = `**AI Analysis: Stocks with a Golden Cross**
+
+A "Golden Cross" is a bullish technical signal where the 50-day moving average crosses above the 200-day moving average. Based on recent chart patterns, here is a candidate:
+
+*   **TITAN (Titan Company Ltd):** The stock has recently exhibited a Golden Cross, indicating a potential long-term uptrend. This is supported by strong consumer demand in the jewelry and watches segments. It's a strong candidate for a long-term portfolio.`;
                 }
 
 

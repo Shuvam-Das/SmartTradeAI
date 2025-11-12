@@ -8,6 +8,7 @@ import NewspaperIcon from './icons/NewspaperIcon';
 import StockDetailsModal from './StockDetailsModal';
 import { getStockDetails } from '../services/geminiService';
 import InfoIcon from './icons/InfoIcon';
+import TrendingLinesIcon from './icons/TrendingLinesIcon';
 
 const FilterInput: React.FC<{ label: string; children: React.ReactNode }> = ({ label, children }) => (
   <div>
@@ -34,6 +35,7 @@ const Screener: React.FC = () => {
     const [sector, setSector] = useState('any');
     const [rsi, setRsi] = useState('any');
     const [macd, setMacd] = useState('any');
+    const [maCross, setMaCross] = useState('any');
     const [sentiment, setSentiment] = useState('any');
     const [aiQuery, setAiQuery] = useState('');
 
@@ -46,7 +48,7 @@ const Screener: React.FC = () => {
     const handleRunScreen = () => {
         setIsLoading(true);
         setResults([]);
-        console.log("Running screen with filters:", { marketCap, sector, rsi, macd, sentiment, aiQuery });
+        console.log("Running screen with filters:", { marketCap, sector, rsi, macd, maCross, sentiment, aiQuery });
 
         // Simulate API call and filtering
         setTimeout(() => {
@@ -57,6 +59,12 @@ const Screener: React.FC = () => {
                 filteredResults = allMockResults.filter(s => ['INFY', 'WIPRO'].includes(s.symbol));
             } else if (rsi === 'overbought') {
                 filteredResults = allMockResults.filter(s => ['BAJFINANCE'].includes(s.symbol));
+            }
+
+            if(maCross === 'golden') {
+                filteredResults = filteredResults.filter(s => ['TITAN'].includes(s.symbol));
+            } else if (maCross === 'death') {
+                filteredResults = filteredResults.filter(s => ['HINDUNILVR'].includes(s.symbol));
             }
 
             if(sector !== 'any') {
@@ -70,10 +78,11 @@ const Screener: React.FC = () => {
         }, 2000);
     };
     
-    const handleAiPreset = (query: string, presetRsi: string, presetSector: string) => {
+    const handleAiPreset = (query: string, presetRsi: string = 'any', presetSector: string = 'any', presetMaCross: string = 'any') => {
         setAiQuery(query);
         setRsi(presetRsi);
         setSector(presetSector);
+        setMaCross(presetMaCross);
     }
 
     const handleOpenDetails = async (stock: Stock) => {
@@ -113,6 +122,7 @@ const Screener: React.FC = () => {
              <button onClick={() => setAiQuery("High-Growth Momentum Stocks")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Momentum Stocks</button>
              <button onClick={() => setAiQuery("Quality Dividend Payers")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Dividend Payers</button>
              <button onClick={() => handleAiPreset("Find Oversold Tech Stocks", "oversold", "IT")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Oversold Tech Stocks</button>
+             <button onClick={() => handleAiPreset("Find stocks with a Golden Cross", "any", "any", "golden")} className="text-xs bg-slate-700 hover:bg-slate-600 text-slate-300 px-3 py-1 rounded-full transition-colors">Golden Cross Stocks</button>
         </div>
       </div>
 
@@ -165,6 +175,13 @@ const Screener: React.FC = () => {
                         <option value="any">Any</option>
                         <option value="bullish">Bullish Crossover</option>
                         <option value="bearish">Bearish Crossover</option>
+                    </select>
+                </FilterInput>
+                <FilterInput label="Moving Average Crossover">
+                     <select value={maCross} onChange={(e) => setMaCross(e.target.value)} className="w-full p-2 text-sm text-slate-300 bg-slate-900 border border-slate-700 rounded-md focus:outline-none focus:ring focus:ring-opacity-40 focus:ring-indigo-500">
+                        <option value="any">Any</option>
+                        <option value="golden">Golden Cross (50D &gt; 200D)</option>
+                        <option value="death">Death Cross (50D &lt; 200D)</option>
                     </select>
                 </FilterInput>
              </div>
