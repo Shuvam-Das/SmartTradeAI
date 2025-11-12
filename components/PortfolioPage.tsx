@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Holding } from '../types';
 import PortfolioIcon from './icons/PortfolioIcon';
 import RobotIcon from './icons/RobotIcon';
@@ -14,19 +13,36 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({ holdings, onActivateStrat
     const [updatedSymbols, setUpdatedSymbols] = useState<Set<string>>(new Set());
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedHolding, setSelectedHolding] = useState<Holding | null>(null);
+    const prevHoldingsRef = useRef<Holding[]>([]);
 
-    // This effect is now just for the flashing animation, as data comes from props
+    // Effect for handling the flashing animation on price change
     useEffect(() => {
         const symbolsThatUpdated = new Set<string>();
-        holdings.forEach(h => symbolsThatUpdated.add(h.symbol)); // Assume all might have updated
+        
+        if (prevHoldingsRef.current.length === holdings.length) {
+            holdings.forEach((holding) => {
+                const prevHolding = prevHoldingsRef.current.find(ph => ph.symbol === holding.symbol);
+                if (prevHolding && prevHolding.price !== holding.price) {
+                    symbolsThatUpdated.add(holding.symbol);
+                }
+            });
+        }
 
         if (symbolsThatUpdated.size > 0) {
-            setUpdatedSymbols(prev => new Set([...prev, ...symbolsThatUpdated]));
+            setUpdatedSymbols(symbolsThatUpdated);
             const timer = setTimeout(() => {
               setUpdatedSymbols(new Set());
             }, 700);
+            
+            // Update the ref for the next comparison
+            prevHoldingsRef.current = holdings;
+            
             return () => clearTimeout(timer);
+        } else {
+            // Ensure ref is updated even if there are no price changes
+            prevHoldingsRef.current = holdings;
         }
+
     }, [holdings]);
 
     const calculateTotals = () => {
@@ -59,21 +75,21 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({ holdings, onActivateStrat
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                <div className="bg-slate-800 p-6 rounded-lg shadow-lg">
+                <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700/50">
                     <h4 className="text-sm font-medium text-slate-400">Total Investment</h4>
                     <p className="text-2xl font-bold text-white mt-2">₹{totals.totalInvestment.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</p>
                 </div>
-                 <div className="bg-slate-800 p-6 rounded-lg shadow-lg">
+                 <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700/50">
                     <h4 className="text-sm font-medium text-slate-400">Current Value</h4>
                     <p className="text-2xl font-bold text-white mt-2">₹{totals.currentValue.toLocaleString('en-IN', { maximumFractionDigits: 2 })}</p>
                 </div>
-                 <div className="bg-slate-800 p-6 rounded-lg shadow-lg">
+                 <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700/50">
                     <h4 className="text-sm font-medium text-slate-400">Overall P&L</h4>
                      <p className={`text-2xl font-bold mt-2 ${totals.totalPL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {totals.totalPL >= 0 ? '+' : ''}₹{totals.totalPL.toLocaleString('en-IN', { maximumFractionDigits: 2 })}
                      </p>
                 </div>
-                 <div className="bg-slate-800 p-6 rounded-lg shadow-lg">
+                 <div className="bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-700/50">
                     <h4 className="text-sm font-medium text-slate-400">P&L %</h4>
                      <p className={`text-2xl font-bold mt-2 ${totals.totalPLPercent >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                         {totals.totalPLPercent.toFixed(2)}%
@@ -96,10 +112,11 @@ const PortfolioPage: React.FC<PortfolioPageProps> = ({ holdings, onActivateStrat
                     </thead>
                     <tbody>
                         {holdings.map((h) => {
-                            const pnlPercent = ((h.price - h.avgPrice) / h.avgPrice) * 100;
+                            const pnlPercent = h.avgPrice > 0 ? ((h.price - h.avgPrice) / h.avgPrice) * 100 : 0;
                             const isPositive = pnlPercent >= 0;
                             const isUpdated = updatedSymbols.has(h.symbol);
-                            const updateClass = isUpdated ? (isPositive ? 'bg-green-500/20' : 'bg-red-500/20') : '';
+                            const priceChangedUp = prevHoldingsRef.current.find(ph => ph.symbol === h.symbol)?.price < h.price;
+                            const updateClass = isUpdated ? (priceChangedUp ? 'bg-green-500/20' : 'bg-red-500/20') : '';
 
                             return (
                                 <tr key={h.symbol} className={`border-t border-slate-700 hover:bg-slate-700/50 transition-colors duration-700 ${updateClass}`}>

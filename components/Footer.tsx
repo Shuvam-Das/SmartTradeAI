@@ -1,9 +1,8 @@
-
 import React from 'react';
 
 const Footer: React.FC = () => {
   return (
-    <footer className="text-center px-6 py-3 bg-slate-800 border-t border-slate-700 text-xs text-slate-500">
+    <footer className="flex-shrink-0 text-center px-6 py-3 bg-slate-800/70 border-t border-slate-700 text-xs text-slate-500">
       <div className="flex justify-between items-center">
         <span>© 2025 Shuvam Das – All Rights Reserved.</span>
         <div>

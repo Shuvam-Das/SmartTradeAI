@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -9,6 +8,7 @@ import SettingsPage from './components/SettingsPage';
 import LoginPage from './components/LoginPage';
 import Footer from './components/Footer';
 import AutomationsPage from './components/AutomationsPage';
+import CookieBanner from './components/CookieBanner';
 import { User, Holding, Alert, AlertType, AIStrategy, PortfolioSummaryData } from './types';
 
 const mockUser: User = {
@@ -41,6 +41,14 @@ const App: React.FC = () => {
   const [alerts, setAlerts] = useState<Alert[]>(initialAlerts);
   const [activeStrategies, setActiveStrategies] = useState<AIStrategy[]>([]);
   const [summaryData, setSummaryData] = useState<PortfolioSummaryData>({ totalValue: 0, todaysPL: 0, totalPL: 0 });
+  const [showCookieBanner, setShowCookieBanner] = useState(false);
+  
+  useEffect(() => {
+    const consent = localStorage.getItem('cookie_consent');
+    if (consent === null) {
+        setShowCookieBanner(true);
+    }
+  }, []);
 
   // Main simulation and agentic AI loop
   useEffect(() => {
@@ -144,6 +152,11 @@ const App: React.FC = () => {
     setHoldings([]);
     setActiveStrategies([]);
   };
+  
+  const handleCookieConsent = (consent: boolean) => {
+    localStorage.setItem('cookie_consent', consent.toString());
+    setShowCookieBanner(false);
+  }
 
   const handleActivateStrategy = (strategy: Omit<AIStrategy, 'status' | 'createdAt'>) => {
     const newStrategy: AIStrategy = {
@@ -161,7 +174,12 @@ const App: React.FC = () => {
   };
 
   if (!isAuthenticated) {
-    return <LoginPage onLogin={handleLogin} />;
+    return (
+        <>
+            <LoginPage onLogin={handleLogin} />
+            {showCookieBanner && <CookieBanner onAccept={() => handleCookieConsent(true)} onDecline={() => handleCookieConsent(false)} />}
+        </>
+    );
   }
 
   const renderPage = () => {
@@ -186,12 +204,13 @@ const App: React.FC = () => {
       <Sidebar activePage={activePage} onNavigate={setActivePage} onLogout={handleLogout} />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header user={user!} onLogout={handleLogout}/>
-        <main className="flex-1 overflow-x-hidden overflow-y-auto bg-slate-900">
-          <div className="container mx-auto px-6 py-8">
+        <main className="flex-1 overflow-x-hidden overflow-y-auto">
+          <div className="container mx-auto px-6 py-8 page-enter">
             {renderPage()}
           </div>
         </main>
         <Footer />
+        {showCookieBanner && <CookieBanner onAccept={() => handleCookieConsent(true)} onDecline={() => handleCookieConsent(false)} />}
       </div>
     </div>
   );

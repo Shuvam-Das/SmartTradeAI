@@ -1,4 +1,3 @@
-
 import React from 'react';
 import DashboardIcon from './icons/DashboardIcon';
 import PortfolioIcon from './icons/PortfolioIcon';
@@ -21,16 +20,16 @@ const NavLink: React.FC<NavLinkProps> = ({ icon, label, active, onClick, disable
   <a
     href="#"
     onClick={(e) => { e.preventDefault(); if (!disabled) onClick(); }}
-    className={`flex items-center px-4 py-2 mt-5 text-slate-400 rounded-md transition-colors duration-200 ${
+    className={`flex items-center px-4 py-3 my-1 text-slate-300 rounded-lg transition-colors duration-200 group ${
       disabled 
         ? 'cursor-not-allowed opacity-50'
-        : 'hover:bg-slate-700 hover:text-slate-200'
+        : 'hover:bg-slate-700 hover:text-white'
     } ${
-      active ? 'bg-slate-700 text-slate-100 shadow-lg' : ''
+      active ? 'bg-indigo-600 text-white font-semibold shadow-lg' : ''
     }`}
   >
     {icon}
-    <span className="mx-4 font-medium">{label}</span>
+    <span className="mx-4">{label}</span>
   </a>
 );
 
@@ -42,54 +41,51 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ activePage, onNavigate, onLogout }) => {
   return (
-    <div className="flex flex-col w-64 h-screen px-4 py-8 bg-slate-800 border-r border-slate-700">
-      <h2 className="text-3xl font-semibold text-white flex items-center">
-        <ChartIcon className="w-8 h-8 mr-2 text-indigo-400" />
-        SmartTradeAI
-      </h2>
-      <div className="flex flex-col justify-between flex-1 mt-6">
-        <nav>
+    <div className="flex-shrink-0 flex flex-col w-64 h-screen px-4 py-8 bg-slate-800 border-r border-slate-700">
+      <div className="flex items-center justify-center h-12">
+        <h2 className="text-2xl font-bold text-white flex items-center bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-purple-400">
+          <ChartIcon className="w-8 h-8 mr-2" />
+          SmartTradeAI
+        </h2>
+      </div>
+      <div className="flex flex-col justify-between flex-1 mt-10">
+        <nav className="-mx-3">
           <NavLink
-            icon={<DashboardIcon className="w-5 h-5" />}
+            icon={<DashboardIcon className="w-6 h-6" />}
             label="Dashboard"
             active={activePage === 'Dashboard'}
             onClick={() => onNavigate('Dashboard')}
           />
           <NavLink
-            icon={<PortfolioIcon className="w-5 h-5" />}
+            icon={<PortfolioIcon className="w-6 h-6" />}
             label="Portfolio"
             active={activePage === 'Portfolio'}
             onClick={() => onNavigate('Portfolio')}
           />
            <NavLink
-            icon={<RobotIcon className="w-5 h-5" />}
+            icon={<RobotIcon className="w-6 h-6" />}
             label="Automations"
             active={activePage === 'Automations'}
             onClick={() => onNavigate('Automations')}
           />
           <NavLink
-            icon={<ScreenerIcon className="w-5 h-5" />}
+            icon={<ScreenerIcon className="w-6 h-6" />}
             label="Screener"
             active={activePage === 'Screener'}
             onClick={() => onNavigate('Screener')}
           />
+          <div className="my-4 border-t border-slate-700 -mx-3"></div>
           <NavLink
-            icon={<AIIcon className="w-5 h-5" />}
-            label="AI Analyst"
-            onClick={() => onNavigate('Dashboard')} // AI Analyst is on the dashboard
-            disabled
-          />
-          <NavLink
-            icon={<SettingsIcon className="w-5 h-5" />}
+            icon={<SettingsIcon className="w-6 h-6" />}
             label="Settings"
             active={activePage === 'Settings'}
             onClick={() => onNavigate('Settings')}
           />
         </nav>
 
-        <div>
+        <div className="-mx-3">
            <NavLink
-            icon={<LogoutIcon className="w-5 h-5" />}
+            icon={<LogoutIcon className="w-6 h-6" />}
             label="Logout"
             onClick={onLogout}
           />
