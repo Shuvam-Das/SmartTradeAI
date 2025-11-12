@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { getAIAnalysis } from '../services/geminiService';
 import AIIcon from './icons/AIIcon';
@@ -6,6 +5,7 @@ import AIIcon from './icons/AIIcon';
 // Mock data for context selectors
 const mockSymbols = ['None', 'RELIANCE', 'TCS', 'HDFCBANK', 'INFY', 'ICICIBANK', 'SBIN', 'BAJFINANCE', 'TATA MOTORS'];
 const mockSectors = ['None', 'IT', 'Banking', 'Energy', 'Automobile', 'FMCG', 'Pharmaceutical'];
+const sentimentOptions = ['Neutral', 'Bullish', 'Bearish'];
 
 const Selector: React.FC<{label: string, value: string, onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void, options: string[]}> = ({ label, value, onChange, options }) => (
     <div className="flex-1">
@@ -81,6 +81,7 @@ const AIAnalyst: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [selectedSymbol, setSelectedSymbol] = useState<string>('None');
   const [selectedSector, setSelectedSector] = useState<string>('None');
+  const [selectedSentiment, setSelectedSentiment] = useState<string>('Neutral');
 
   const handleAskAI = async () => {
     if (!prompt.trim()) return;
@@ -90,14 +91,17 @@ const AIAnalyst: React.FC = () => {
     let fullPrompt = prompt;
     let prefix = '';
 
-    if (selectedSymbol !== 'None' && selectedSector !== 'None') {
-        prefix = `For the stock ${selectedSymbol} in the ${selectedSector} sector: `;
-    } else if (selectedSymbol !== 'None') {
-        prefix = `For the stock ${selectedSymbol}: `;
-    } else if (selectedSector !== 'None') {
-        prefix = `For the ${selectedSector} sector: `;
+    const sentimentPart = selectedSentiment !== 'Neutral' ? `with a ${selectedSentiment.toLowerCase()} sentiment` : '';
+    const stockPart = selectedSymbol !== 'None' ? `for the stock ${selectedSymbol}` : '';
+    const sectorPart = selectedSector !== 'None' ? `in the ${selectedSector} sector` : '';
+
+    // Combine parts into a coherent sentence fragment
+    const allParts = [sentimentPart, stockPart, sectorPart].filter(Boolean);
+
+    if (allParts.length > 0) {
+        prefix = `${allParts.join(' ')}: `;
     }
-    
+
     fullPrompt = prefix + prompt;
 
     try {
@@ -114,6 +118,7 @@ const AIAnalyst: React.FC = () => {
     setPrompt(presetPrompt);
     setSelectedSymbol(symbol);
     setSelectedSector(sector);
+    setSelectedSentiment('Neutral');
   };
   
   return (
@@ -145,6 +150,7 @@ const AIAnalyst: React.FC = () => {
          <div className="flex gap-4">
             <Selector label="Stock Symbol" value={selectedSymbol} onChange={(e) => setSelectedSymbol(e.target.value)} options={mockSymbols} />
             <Selector label="Market Sector" value={selectedSector} onChange={(e) => setSelectedSector(e.target.value)} options={mockSectors} />
+            <Selector label="Sentiment" value={selectedSentiment} onChange={(e) => setSelectedSentiment(e.target.value)} options={sentimentOptions} />
          </div>
        </div>
 

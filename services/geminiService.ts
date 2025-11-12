@@ -1,4 +1,3 @@
-
 // This is a MOCK service. In a real application, you would implement the actual Gemini API calls.
 // Note: The @google/genai package is not actually installed in this environment,
 // so this is for demonstration purposes.
@@ -39,6 +38,30 @@ This strategy aims to capitalize on the stock's current upward trend.
 **Conditions to Avoid:**
 *   Do not enter a trade if the **Relative Strength Index (RSI)** is above **70**, as the stock may be overbought and due for a pullback.
 *   Avoid trading during major news events or quarterly earnings announcements due to high volatility.`;
+                } else if (prompt.includes("tata motors") && prompt.includes("bullish")) {
+                    responseText = `**Bullish Analysis for Tata Motors (TATAMOTORS):**
+
+This view focuses on the significant upside potential driven by market leadership and strategic growth.
+
+*   **Dominant EV Position:** Tata Motors has a commanding lead in India's passenger EV market. Continued government support and rising fuel prices create a strong tailwind for EV sales growth.
+*   **JLR Turnaround:** The Jaguar Land Rover business is showing a strong recovery with improved margins, a healthy order book, and a clear electrification roadmap. This is a major positive catalyst.
+*   **Strong Domestic Demand:** The commercial and passenger vehicle segments in India are experiencing robust demand, which is expected to continue.
+
+**Trading View:**
+*   **Key Resistance Breakout:** A sustained move above **₹1050** could signal the start of a new uptrend towards **₹1150-₹1200**.
+*   **Buy on Dips:** Consider accumulating shares on any dips towards the support level of **₹980**.`;
+                } else if (prompt.includes("tata motors") && prompt.includes("bearish")) {
+                     responseText = `**Bearish Analysis for Tata Motors (TATAMOTORS):**
+
+This view considers potential headwinds and risks that could impact the stock's performance.
+
+*   **Intensifying Competition:** Competition in the EV space is heating up with both domestic (Mahindra) and international (MG, Hyundai) players launching new models. This could erode Tata's market share.
+*   **Global Macro Risks:** The JLR business is sensitive to global economic slowdowns, particularly in key markets like Europe and China. Geopolitical tensions could also disrupt supply chains.
+*   **Raw Material Costs:** Fluctuations in the prices of key commodities like steel, aluminum, and battery components can put pressure on margins.
+
+**Trading View:**
+*   **Potential for Correction:** If the stock fails to break the strong resistance at **₹1050**, it could see a correction back to its primary support level around **₹940**.
+*   **Risk Management:** A break below **₹940** would be a significant bearish signal and could trigger a deeper sell-off.`;
                 } else if (prompt.includes("tata motors")) {
                     responseText = `**Analysis for Tata Motors (TATAMOTORS):**
 
